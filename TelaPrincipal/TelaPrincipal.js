@@ -100,8 +100,49 @@ document.addEventListener('DOMContentLoaded', () => {
         pesquisaButton.addEventListener('click', () => alert('Obrigado por participar da pesquisa! (Função de exemplo)'));
     }
 
-    const editalIcons = document.querySelectorAll('.editais-widget .editais-icons i');
+    const editalIcons = document.querySelectorAll('.editais-widget .edital-actions i');
     editalIcons.forEach(icon => {
         icon.addEventListener('click', () => alert(`Ação de exemplo: "${icon.title}"`));
     });
+    
+    // --- LÓGICA DO WIDGET DE ESTATÍSTICAS GERAIS ---
+    const updateGlobalStats = () => {
+        // 1. Tópicos Concluídos (soma de todos os editais)
+        let totalTopicsCompleted = 0;
+        // Adicione outras chaves de progresso de editais aqui se existirem
+        const progressKeys = ['studyProgressPMDF', 'studyProgressCBMDF']; 
+        
+        progressKeys.forEach(key => {
+            const progressData = JSON.parse(localStorage.getItem(key)) || {};
+            totalTopicsCompleted += Object.keys(progressData).length;
+        });
+
+        // 2. Flashcards e Baralhos
+        let totalFlashcards = 0;
+        let totalDecks = 0;
+        const decksData = JSON.parse(localStorage.getItem('flashcardDecks')) || [];
+        
+        totalDecks = decksData.length;
+        decksData.forEach(deck => {
+            totalFlashcards += deck.cards ? deck.cards.length : 0;
+        });
+
+        // 3. Atualiza os elementos no HTML
+        const topicosEl = document.getElementById('topicos-concluidos');
+        const flashcardsEl = document.getElementById('flashcards-criados');
+        const baralhosEl = document.getElementById('baralhos-criados');
+
+        if (topicosEl) {
+            topicosEl.textContent = totalTopicsCompleted;
+        }
+        if (flashcardsEl) {
+            flashcardsEl.textContent = totalFlashcards;
+        }
+        if (baralhosEl) {
+            baralhosEl.textContent = totalDecks;
+        }
+    };
+
+    // Chama a nova função para atualizar as estatísticas ao carregar a página
+    updateGlobalStats();
 });
