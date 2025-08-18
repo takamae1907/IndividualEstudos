@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    
+
     // --- LÓGICA DO WIDGET DE LEMBRETES ---
     const populateRemindersWidget = () => {
         const lembretesList = document.querySelector('.right-column .lembretes-widget ul');
@@ -23,19 +23,19 @@ document.addEventListener('DOMContentLoaded', () => {
             lembretesList.innerHTML = '<li>Nenhum lembrete para hoje.</li>';
             return;
         }
-        
+
         // Define a data atual para garantir consistência na demonstração
-        const hoje = new Date('2025-08-09T12:00:00'); 
+        const hoje = new Date('2025-08-09T12:00:00');
         const amanha = new Date(hoje);
         amanha.setDate(hoje.getDate() + 1);
 
         sortedReminders.forEach(reminder => {
             const li = document.createElement('li');
             // Adiciona T00:00:00 para evitar problemas de fuso horário na comparação
-            const dataLembrete = new Date(reminder.date + 'T00:00:00'); 
-            
+            const dataLembrete = new Date(reminder.date + 'T00:00:00');
+
             let textoData;
-            
+
             // Compara apenas a data (ano, mês, dia), ignorando a hora
             if (dataLembrete.toDateString() === hoje.toDateString()) {
                 textoData = 'Hoje, 19:00'; // Hora de exemplo
@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
             lembretesList.appendChild(li);
         });
     };
-    
+
     populateRemindersWidget();
 
     // --- LÓGICA DA BARRA LATERAL (SIDEBAR) ---
@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
     sidebarItems.forEach(item => {
         item.addEventListener('click', (event) => {
             // Previne o comportamento padrão do link para não recarregar a página com '#'
-            event.preventDefault(); 
+            event.preventDefault();
             const link = event.currentTarget.querySelector('a');
 
             if (link.getAttribute('href') && link.getAttribute('href') !== '#') {
@@ -71,19 +71,19 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
-    
+
     // --- LÓGICA DA PESQUISA DE TURMAS ---
     const searchInput = document.querySelector('.turmas-section input');
     // Seleciona os links que envolvem os cards para poder escondê-los
     const turmasLinks = document.querySelectorAll('.turmas-grid .turma-card');
-    
+
     if (searchInput) {
         searchInput.addEventListener('input', (event) => {
             const searchTerm = event.target.value.toLowerCase().trim();
-            
+
             turmasLinks.forEach(link => {
                 const turmaTitle = link.querySelector('.turma-title').textContent.toLowerCase();
-                
+
                 // Mostra ou esconde o link (e o card dentro dele)
                 if (turmaTitle.includes(searchTerm)) {
                     link.style.display = 'block';
@@ -104,14 +104,14 @@ document.addEventListener('DOMContentLoaded', () => {
     editalIcons.forEach(icon => {
         icon.addEventListener('click', () => alert(`Ação de exemplo: "${icon.title}"`));
     });
-    
+
     // --- LÓGICA DO WIDGET DE ESTATÍSTICAS GERAIS ---
     const updateGlobalStats = () => {
         // 1. Tópicos Concluídos (soma de todos os editais)
         let totalTopicsCompleted = 0;
         // Adicione outras chaves de progresso de editais aqui se existirem
-        const progressKeys = ['studyProgressPMDF', 'studyProgressCBMDF']; 
-        
+        const progressKeys = ['studyProgressPMDF', 'studyProgressCBMDF'];
+
         progressKeys.forEach(key => {
             const progressData = JSON.parse(localStorage.getItem(key)) || {};
             totalTopicsCompleted += Object.keys(progressData).length;
@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let totalFlashcards = 0;
         let totalDecks = 0;
         const decksData = JSON.parse(localStorage.getItem('flashcardDecks')) || [];
-        
+
         totalDecks = decksData.length;
         decksData.forEach(deck => {
             totalFlashcards += deck.cards ? deck.cards.length : 0;
