@@ -31,12 +31,31 @@ document.addEventListener('DOMContentLoaded', () => {
     const todayList = document.getElementById('today-list');
     const currentDateEl = document.getElementById('current-date');
 
-    let progress = JSON.parse(localStorage.getItem('studyProgressPMDF')) || {};
+    // --- INÍCIO DAS MODIFICAÇÕES ---
+
+    // Pega o usuário logado a partir da função criada no auth.js
+    const currentUserEmail = getCurrentUserEmail(); 
+    if (!currentUserEmail) {
+        // Se não houver usuário, interrompe a execução para evitar erros
+        console.error("Nenhum usuário logado encontrado.");
+        return; 
+    }
+
+    // Cria uma chave única para o progresso deste edital, baseada no email do usuário
+    const progressKey = `studyProgressPMDF_${currentUserEmail}`; // <-- MODIFICADO
+    
+    // Carrega o progresso a partir da chave única do usuário
+    let progress = JSON.parse(localStorage.getItem(progressKey)) || {}; // <-- MODIFICADO
+    
     let totalTopics = 0;
 
     function saveProgress() {
-        localStorage.setItem('studyProgressPMDF', JSON.stringify(progress));
+        // Salva o progresso na chave única do usuário
+        localStorage.setItem(progressKey, JSON.stringify(progress)); // <-- MODIFICADO
     }
+
+    // --- FIM DAS MODIFICAÇÕES ---
+    // O restante do código funciona perfeitamente sem alterações.
 
     function renderCronograma() {
         cronogramaContainer.innerHTML = '';
