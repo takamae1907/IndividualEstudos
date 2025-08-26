@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const confirmPassword = document.getElementById('confirm-password').value;
 
         if (password !== confirmPassword) {
-            alert('As senhas não coincidem. Por favor, tente novamente.');
+            alert('As senhas não coincidem.');
             return;
         }
         if (password.length < 6) {
@@ -18,19 +18,24 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const users = JSON.parse(localStorage.getItem('users')) || [];
-        const userExists = users.find(user => user.email === email);
+        // 1. Cria o usuário no Firebase Authentication
+        auth.createUserWithEmailAndPassword(email, password)
+            .then((userCredential) => {
+                const user = userCredential.user;
 
-        if (userExists) {
-            alert('Este email já foi cadastrado. Por favor, use outro.');
-            return;
-        }
-
-        // Adiciona o nome completo ao objeto do usuário
-        users.push({ fullname: fullname, email: email, password: password });
-        localStorage.setItem('users', JSON.stringify(users));
-
-        alert('Cadastro realizado com sucesso! Você será redirecionado para a página de login.');
-        window.location.href = 'index.html';
+                // 2. Salva informações adicionais (nome) no Firestore
+                return db.collection('users').doc(user.uid).set({
+                    fullname: fullname,
+                    email: email,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            })
+            .then(() => {
+                alert('Cadastro realizado com sucesso! Você será redirecionado para o login.');
+                window.location.href = 'index.html';
+            })
+            .catch((error) => {
+                alert('Erro no cadastro: ' + error.message);
+            });
     });
 });

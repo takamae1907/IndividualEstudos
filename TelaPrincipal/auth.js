@@ -1,38 +1,57 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // Pega o email do usuário "logado" do sessionStorage
-    const currentUserEmail = sessionStorage.getItem('currentUser');
-
-    // Se não houver usuário logado, redireciona para a página de login
-    if (!currentUserEmail) {
-        // Ajusta o caminho para voltar para a raiz do projeto
-        alert('Você precisa fazer login para acessar esta página.');
+// Função de logout que pode ser chamada de qualquer página
+function logout() {
+    auth.signOut().then(() => {
         window.location.href = '../index.html';
-        return;
-    }
+    }).catch(error => {
+        console.error("Erro ao fazer logout:", error);
+    });
+}
 
-    // Pega todos os usuários do localStorage para encontrar os dados do usuário atual
-    const users = JSON.parse(localStorage.getItem('users')) || [];
-    const currentUser = users.find(user => user.email === currentUserEmail);
+document.addEventListener('DOMContentLoaded', () => {
+    const body = document.querySelector('body');
+    body.style.visibility = 'hidden'; // Esconde o conteúdo até a verificação
 
-    if (currentUser) {
-        // Tenta encontrar e atualizar o nome do usuário na sidebar de qualquer página
-        const userNameElements = document.querySelectorAll('.sidebar-user h2');
-        userNameElements.forEach(element => {
-            // Usa o nome completo, mas pega o primeiro nome para ser mais amigável
-            const firstName = currentUser.fullname ? currentUser.fullname.split(' ')[0] : 'Usuário';
-            element.textContent = firstName;
-        });
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            // Usuário está logado, busca os dados dele no Firestore
+            db.collection('users').doc(user.uid).get().then(doc => {
+                if (doc.exists) {
+                    const userData = doc.data();
+                    const firstName = userData.fullname.split(' ')[0];
 
-        // Tenta encontrar a mensagem de boas-vindas APENAS na tela principal
-        const welcomeEl = document.getElementById('welcome-message');
-        if (welcomeEl) {
-             const firstName = currentUser.fullname ? currentUser.fullname.split(' ')[0] : 'Usuário';
-             welcomeEl.innerHTML = `Olá, ${firstName}. <span class="subtitle">Bem-vindo(a)!</span>`;
+                    // Atualiza o nome em todas as sidebars
+                    document.querySelectorAll('.sidebar-user h2').forEach(el => {
+                        el.textContent = firstName;
+                    });
+
+                    // Atualiza a mensagem de boas-vindas (se existir na página)
+                    const welcomeEl = document.getElementById('welcome-message');
+                    if (welcomeEl) {
+                        welcomeEl.innerHTML = `Olá, ${firstName}. <span class="subtitle">Bem-vindo(a)!</span>`;
+                    }
+                    body.style.visibility = 'visible'; // Mostra o conteúdo
+                } else {
+                    // Se não encontrar os dados, desloga para segurança
+                    logout();
+                }
+            });
+        } else {
+            // Usuário não está logado, redireciona para o login
+            alert('Você precisa estar logado para acessar esta página.');
+            window.location.href = '../index.html';
         }
+    });
+
+    // Adiciona o botão de Sair dinamicamente a todas as sidebars
+    const sidebarNav = document.querySelector('.sidebar-nav ul');
+    if (sidebarNav && !document.getElementById('logout-btn')) {
+        const logoutLi = document.createElement('li');
+        logoutLi.innerHTML = `<a href="#" id="logout-btn"><i class="fa-solid fa-right-from-bracket"></i><span>Sair</span></a>`;
+        sidebarNav.appendChild(logoutLi);
+
+        document.getElementById('logout-btn').addEventListener('click', (e) => {
+            e.preventDefault();
+            logout();
+        });
     }
 });
-
-// Função auxiliar para obter o email do usuário atual em outros scripts
-function getCurrentUserEmail() {
-    return sessionStorage.getItem('currentUser');
-}
