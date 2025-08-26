@@ -88,6 +88,7 @@
             color: #ffffff;
             background-color: #2c2c2e;
         }
+
         /* --- FIM DA SIDEBAR PADRÃO --- */
 
         /* --- CONTEÚDO PRINCIPAL E COLUNA DIREITA --- */
@@ -428,21 +429,39 @@
                 grid-template-columns: 90px 1fr;
                 grid-template-areas: "sidebar main";
             }
-            .sidebar { grid-area: sidebar; }
-            .main-content { grid-area: main; }
-            .right-column { display: none; }
+
+            .sidebar {
+                grid-area: sidebar;
+            }
+
+            .main-content {
+                grid-area: main;
+            }
+
+            .right-column {
+                display: none;
+            }
 
             .sidebar-nav li a {
                 flex-direction: column;
                 gap: 8px;
                 justify-content: center;
             }
-            .sidebar-nav li a span { font-size: 0.7em; }
-            .sidebar-user { display: none; }
+
+            .sidebar-nav li a span {
+                font-size: 0.7em;
+            }
+
+            .sidebar-user {
+                display: none;
+            }
         }
 
         @media (max-width: 768px) {
-            body { overflow-y: auto; }
+            body {
+                overflow-y: auto;
+            }
+
             .dashboard-container {
                 display: flex;
                 flex-direction: column;
@@ -479,7 +498,11 @@
                 -webkit-backdrop-filter: blur(15px);
                 border-top: 1px solid rgba(255, 255, 255, 0.1);
             }
-            .sidebar-nav { width: 100%; }
+
+            .sidebar-nav {
+                width: 100%;
+            }
+
             .sidebar-nav ul {
                 display: flex;
                 justify-content: space-around;
@@ -487,8 +510,15 @@
                 width: 100%;
                 padding: 0;
             }
-            .sidebar-nav li a span { display: none; }
-            .sidebar-nav li a i { font-size: 1.6em; }
+
+            .sidebar-nav li a span {
+                display: none;
+            }
+
+            .sidebar-nav li a i {
+                font-size: 1.6em;
+            }
+
             .sidebar-nav li.active a,
             .sidebar-nav li a:hover {
                 background-color: transparent;
@@ -513,7 +543,7 @@
                             <span>Home</span>
                         </a>
                     </li>
-                    </ul>
+                </ul>
             </nav>
         </aside>
 
@@ -536,7 +566,7 @@
             <section class="plan-container">
                 <h2>Cronograma de Estudos</h2>
                 <div id="cronograma-container" class="accordion-container">
-                    </div>
+                </div>
             </section>
         </main>
 
@@ -548,7 +578,7 @@
                 </div>
                 <h4><i class="fa-solid fa-bullseye"></i> Estudos de Hoje</h4>
                 <ul id="today-list">
-                    </ul>
+                </ul>
             </div>
             <div class="widget lembretes-widget">
                 <h4><i class="fa-solid fa-star"></i> Lembretes Fixos</h4>
@@ -557,7 +587,7 @@
                         <strong>Revisão de Sábado</strong>
                         <span>Revisar os tópicos mais difíceis da semana e resolver questões.</span>
                     </li>
-                     <li>
+                    <li>
                         <strong>Simulado Semanal</strong>
                         <span>Resolver um simulado completo aos domingos.</span>
                     </li>
@@ -573,260 +603,263 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
-    <script src="../firebase-init.js"></script> <script src="auth.js"></script>
+    <script src="../firebase-init.js"></script>
+    <script src="auth.js"></script>
+    <script src="edital-cfocbm.js"></script>
     <script>
-    document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', () => {
 
-        // --- CONTEÚDO PROGRAMÁTICO CFO ---
-        const editalCFO = {
-            'LÍNGUA PORTUGUESA': [ 'Compreensão e interpretação de textos de gêneros variados.', 'Reconhecimento de tipos e gêneros textuais.', 'Domínio da ortografia oficial (incluindo Acordo Ortográfico).', 'Domínio dos mecanismos de coesão textual.', 'Domínio da estrutura morfossintática do período.', 'Reescritura de frases e parágrafos do texto.', 'Correspondência oficial.' ],
-            'LÍNGUA INGLESA': [ 'Compreensão de texto escrito em língua inglesa.', 'Itens gramaticais relevantes para a compreensão semântica.' ],
-            'MATEMÁTICA': [ 'Cálculo diferencial e integral para uma e várias variáveis.', 'Cálculo numérico, pesquisa de máximos e mínimos de funções.', 'Equações diferenciais ordinárias.', 'Números complexos e funções de variável complexa.', 'Álgebra Linear: espaços vetoriais, transformações, matrizes.', 'Álgebra e Teoria dos números.', 'Geometria e Geometria diferencial.', 'Probabilidade e estatística.', 'Análise de algoritmos e Noções de programação linear.', 'Análise combinatória.' ],
-            'QUÍMICA': [ 'O mundo e suas transformações: história e importância da química.', 'Teoria Atômico-Molecular e cálculos estequiométricos.', 'Classificação periódica dos elementos químicos.', 'Radioatividade: natureza das emissões, leis, cinética.', 'Ligações químicas: iônica, covalente, metálica, intermoleculares.', 'Matéria, mudança de estado e separação de misturas.', 'Funções químicas inorgânicas: ácidos, bases, sais, óxidos.', 'Misturas e soluções: solubilidade, propriedades coligativas.', 'Gases: Teoria cinética, Leis dos gases.', 'Termoquímica: entalpia, entropia, energia livre.', 'Cinética química: velocidade, teoria das colisões.', 'Equilíbrio químico: iônico, ácido-base, hidrólise, tampão.', 'Eletroquímica: pilhas, eletrólise.', 'Química orgânica: propriedades, funções, reatividade.' ],
-            'FÍSICA': [ 'História e evolução das ideias da física.', 'Mecânica: cinemática, leis de Newton, energia, gravitação.', 'Termodinâmica: calor, temperatura, leis da termodinâmica.', 'Eletromagnetismo: campo elétrico, magnético, equações de Maxwell.', 'Ondulatória: MHS, ondas sonoras e eletromagnéticas.', 'Óptica geométrica e física: reflexão, refração, instrumentos.', 'Física moderna: relatividade, teoria quântica.', 'Hidráulica geral: orifícios, canais, condutos, bombeamento.', 'Mecânica dos fluidos: estática, análise de escoamentos.', 'Mecânica dos sólidos: tensão, deformação, flexão, flambagem.' ],
-            'NOÇÕES DE INFORMÁTICA': [ 'Noções de sistema operacional (Linux e Windows).', 'Edição de textos, planilhas e apresentações (MS Office e LibreOffice).', 'Internet, intranet, navegadores e correio eletrônico.', 'Gerenciamento de arquivos, pastas e programas.', 'Segurança da informação: vírus, pragas virtuais, backup.' ],
-            'NOÇÕES DE AGENDA AMBIENTAL': [ 'Política Nacional de Resíduos Sólidos (Lei 12.305/2010).', 'Política Nacional de Mudanças no Clima (Lei 12.187/2009).', 'Código Florestal (Lei nº 12.651/2012).', 'Política Nacional do Meio Ambiente (Lei Federal nº 6.938/1981).' ],
-            'NOÇÕES DE ADMINISTRAÇÃO PÚBLICA': [ 'Organizações formais modernas: características.', 'Gestão pública vs. gestão privada.', 'Princípios básicos da Administração Pública.', 'Gestão de resultados e avaliação de desempenho.', 'Processo organizacional: planejamento, direção, controle.', 'Gestão estratégica, tática e operacional.', 'Gestão de pessoas, processos e projetos.', 'Gestão de contratos e da Qualidade.', 'Motivação, Liderança e Processo decisório.', 'Ética no serviço público.' ],
-            'LEGISLAÇÃO': [ 'Lei nº 7.479/1986 (Estatuto dos Bombeiros-Militares).', 'Lei nº 8.255/1991 (Organização básica do CBMDF).', 'Lei nº 12.086/2009 (Militares da PMDF e CBMDF).', 'Decreto Federal nº 7.163/2010.', 'Decreto GDF nº 31.817/2010.', 'Decreto-Lei nº 667/1969 (Reorganiza PM e CBM).', 'Lei nº 14.751/2023 (Lei Orgânica Nacional PM e CBM).', 'Lei nº 9.784/99 (Processo administrativo federal).', 'Lei nº 13.709/2018 (LGPD) e Decreto nº 45.771/2024 (LGPD no DF).', 'Lei nº 4.949/2012 (Realidade do DF e RIDE).', 'Lei Orgânica do Distrito Federal.', 'Lei Complementar nº 840/2011 (Servidores públicos civis do DF).' ]
-        };
+            // --- CONTEÚDO PROGRAMÁTICO CFO ---
+            const editalCFO = {
+                'LÍNGUA PORTUGUESA': ['Compreensão e interpretação de textos de gêneros variados.', 'Reconhecimento de tipos e gêneros textuais.', 'Domínio da ortografia oficial (incluindo Acordo Ortográfico).', 'Domínio dos mecanismos de coesão textual.', 'Domínio da estrutura morfossintática do período.', 'Reescritura de frases e parágrafos do texto.', 'Correspondência oficial.'],
+                'LÍNGUA INGLESA': ['Compreensão de texto escrito em língua inglesa.', 'Itens gramaticais relevantes para a compreensão semântica.'],
+                'MATEMÁTICA': ['Cálculo diferencial e integral para uma e várias variáveis.', 'Cálculo numérico, pesquisa de máximos e mínimos de funções.', 'Equações diferenciais ordinárias.', 'Números complexos e funções de variável complexa.', 'Álgebra Linear: espaços vetoriais, transformações, matrizes.', 'Álgebra e Teoria dos números.', 'Geometria e Geometria diferencial.', 'Probabilidade e estatística.', 'Análise de algoritmos e Noções de programação linear.', 'Análise combinatória.'],
+                'QUÍMICA': ['O mundo e suas transformações: história e importância da química.', 'Teoria Atômico-Molecular e cálculos estequiométricos.', 'Classificação periódica dos elementos químicos.', 'Radioatividade: natureza das emissões, leis, cinética.', 'Ligações químicas: iônica, covalente, metálica, intermoleculares.', 'Matéria, mudança de estado e separação de misturas.', 'Funções químicas inorgânicas: ácidos, bases, sais, óxidos.', 'Misturas e soluções: solubilidade, propriedades coligativas.', 'Gases: Teoria cinética, Leis dos gases.', 'Termoquímica: entalpia, entropia, energia livre.', 'Cinética química: velocidade, teoria das colisões.', 'Equilíbrio químico: iônico, ácido-base, hidrólise, tampão.', 'Eletroquímica: pilhas, eletrólise.', 'Química orgânica: propriedades, funções, reatividade.'],
+                'FÍSICA': ['História e evolução das ideias da física.', 'Mecânica: cinemática, leis de Newton, energia, gravitação.', 'Termodinâmica: calor, temperatura, leis da termodinâmica.', 'Eletromagnetismo: campo elétrico, magnético, equações de Maxwell.', 'Ondulatória: MHS, ondas sonoras e eletromagnéticas.', 'Óptica geométrica e física: reflexão, refração, instrumentos.', 'Física moderna: relatividade, teoria quântica.', 'Hidráulica geral: orifícios, canais, condutos, bombeamento.', 'Mecânica dos fluidos: estática, análise de escoamentos.', 'Mecânica dos sólidos: tensão, deformação, flexão, flambagem.'],
+                'NOÇÕES DE INFORMÁTICA': ['Noções de sistema operacional (Linux e Windows).', 'Edição de textos, planilhas e apresentações (MS Office e LibreOffice).', 'Internet, intranet, navegadores e correio eletrônico.', 'Gerenciamento de arquivos, pastas e programas.', 'Segurança da informação: vírus, pragas virtuais, backup.'],
+                'NOÇÕES DE AGENDA AMBIENTAL': ['Política Nacional de Resíduos Sólidos (Lei 12.305/2010).', 'Política Nacional de Mudanças no Clima (Lei 12.187/2009).', 'Código Florestal (Lei nº 12.651/2012).', 'Política Nacional do Meio Ambiente (Lei Federal nº 6.938/1981).'],
+                'NOÇÕES DE ADMINISTRAÇÃO PÚBLICA': ['Organizações formais modernas: características.', 'Gestão pública vs. gestão privada.', 'Princípios básicos da Administração Pública.', 'Gestão de resultados e avaliação de desempenho.', 'Processo organizacional: planejamento, direção, controle.', 'Gestão estratégica, tática e operacional.', 'Gestão de pessoas, processos e projetos.', 'Gestão de contratos e da Qualidade.', 'Motivação, Liderança e Processo decisório.', 'Ética no serviço público.'],
+                'LEGISLAÇÃO': ['Lei nº 7.479/1986 (Estatuto dos Bombeiros-Militares).', 'Lei nº 8.255/1991 (Organização básica do CBMDF).', 'Lei nº 12.086/2009 (Militares da PMDF e CBMDF).', 'Decreto Federal nº 7.163/2010.', 'Decreto GDF nº 31.817/2010.', 'Decreto-Lei nº 667/1969 (Reorganiza PM e CBM).', 'Lei nº 14.751/2023 (Lei Orgânica Nacional PM e CBM).', 'Lei nº 9.784/99 (Processo administrativo federal).', 'Lei nº 13.709/2018 (LGPD) e Decreto nº 45.771/2024 (LGPD no DF).', 'Lei nº 4.949/2012 (Realidade do DF e RIDE).', 'Lei Orgânica do Distrito Federal.', 'Lei Complementar nº 840/2011 (Servidores públicos civis do DF).']
+            };
 
-        // --- CRONOGRAMA DE ESTUDOS CFO (15 SEMANAS) ---
-        const cronogramaCFO = [
-            // ... (O seu cronograma completo permanece aqui, sem alterações)
-            { semana: 1, dias: [ { dia: "Segunda", topicos: [{ id: "leg1", m: "LEGISLAÇÃO", t: 0 }, { id: "mat1", m: "MATEMÁTICA", t: 0 }] }, { dia: "Terça", topicos: [{ id: "fis1", m: "FÍSICA", t: 1 }, { id: "lp1", m: "LÍNGUA PORTUGUESA", t: 0 }] }, { dia: "Quarta", topicos: [{ id: "qui1", m: "QUÍMICA", t: 1 }, { id: "leg2", m: "LEGISLAÇÃO", t: 1 }] }, { dia: "Quinta", topicos: [{ id: "mat2", m: "MATEMÁTICA", t: 1 }, { id: "ing1", m: "LÍNGUA INGLESA", t: 0 }] }, { dia: "Sexta", topicos: [{ id: "fis2", m: "FÍSICA", t: 2 }, { id: "info1", m: "NOÇÕES DE INFORMÁTICA", t: 0 }] }, { dia: "Sábado", topicos: [{ id: "rev1", m: "Revisão", t: "Revisar tópicos da Semana 1 + Questões" }] } ] },
-            { semana: 2, dias: [ { dia: "Segunda", topicos: [{ id: "leg3", m: "LEGISLAÇÃO", t: 2 }, { id: "qui2", m: "QUÍMICA", t: 2 }] }, { dia: "Terça", topicos: [{ id: "mat3", m: "MATEMÁTICA", t: 2 }, { id: "lp2", m: "LÍNGUA PORTUGUESA", t: 1 }] }, { dia: "Quarta", topicos: [{ id: "fis3", m: "FÍSICA", t: 3 }, { id: "leg4", m: "LEGISLAÇÃO", t: 3 }] }, { dia: "Quinta", topicos: [{ id: "qui3", m: "QUÍMICA", t: 3 }, { id: "adm1", m: "NOÇÕES DE ADMINISTRAÇÃO PÚBLICA", t: 0 }] }, { dia: "Sexta", topicos: [{ id: "mat4", m: "MATEMÁTICA", t: 3 }, { id: "amb1", m: "NOÇÕES DE AGENDA AMBIENTAL", t: 0 }] }, { dia: "Sábado", topicos: [{ id: "rev2", m: "Revisão", t: "Revisar tópicos + Questões" }] }, { dia: "Domingo", topicos: [{ id: "sim1", m: "Simulado", t: "Simulado Parcial (Gerais)" }] } ] },
-            { semana: 3, dias: [ { dia: "Segunda", topicos: [{ id: "leg5", m: "LEGISLAÇÃO", t: 4 }, { id: "fis4", m: "FÍSICA", t: 4 }] }, { dia: "Terça", topicos: [{ id: "qui4", m: "QUÍMICA", t: 4 }, { id: "lp3", m: "LÍNGUA PORTUGUESA", t: 2 }] }, { dia: "Quarta", topicos: [{ id: "mat5", m: "MATEMÁTICA", t: 4 }, { id: "leg6", m: "LEGISLAÇÃO", t: 5 }] }, { dia: "Quinta", topicos: [{ id: "fis5", m: "FÍSICA", t: 5 }, { id: "info2", m: "NOÇÕES DE INFORMÁTICA", t: 1 }] }, { dia: "Sexta", topicos: [{ id: "qui5", m: "QUÍMICA", t: 5 }, { id: "adm2", m: "NOÇÕES DE ADMINISTRAÇÃO PÚBLICA", t: 1 }] }, { dia: "Sábado", topicos: [{ id: "rev3", m: "Revisão", t: "Revisar tópicos da Semana 3 + Questões" }] } ] },
-            { semana: 4, dias: [ { dia: "Segunda", topicos: [{ id: "leg7", m: "LEGISLAÇÃO", t: 6 }, { id: "mat6", m: "MATEMÁTICA", t: 5 }] }, { dia: "Terça", topicos: [{ id: "qui6", m: "QUÍMICA", t: 6 }, { id: "lp4", m: "LÍNGUA PORTUGUESA", t: 3 }] }, { dia: "Quarta", topicos: [{ id: "fis6", m: "FÍSICA", t: 6 }, { id: "leg8", m: "LEGISLAÇÃO", t: 7 }] }, { dia: "Quinta", topicos: [{ id: "mat7", m: "MATEMÁTICA", t: 6 }, { id: "ing2", m: "LÍNGUA INGLESA", t: 1 }] }, { dia: "Sexta", topicos: [{ id: "qui7", m: "QUÍMICA", t: 7 }, { id: "amb2", m: "NOÇÕES DE AGENDA AMBIENTAL", t: 1 }] }, { dia: "Sábado", topicos: [{ id: "rev4", m: "Revisão", t: "Revisar tópicos + Questões" }] }, { dia: "Domingo", topicos: [{ id: "sim2", m: "Simulado", t: "Simulado Parcial (Específicas)" }] } ] },
-            { semana: 5, dias: [ { dia: "Segunda", topicos: [{ id: "leg9", m: "LEGISLAÇÃO", t: 8 }, { id: "fis7", m: "FÍSICA", t: 7 }] }, { dia: "Terça", topicos: [{ id: "mat8", m: "MATEMÁTICA", t: 7 }, { id: "lp5", m: "LÍNGUA PORTUGUESA", t: 4 }] }, { dia: "Quarta", topicos: [{ id: "qui8", m: "QUÍMICA", t: 8 }, { id: "leg10", m: "LEGISLAÇÃO", t: 9 }] }, { dia: "Quinta", topicos: [{ id: "fis8", m: "FÍSICA", t: 8 }, { id: "adm3", m: "NOÇÕES DE ADMINISTração PÚBLICA", t: 2 }] }, { dia: "Sexta", topicos: [{ id: "mat9", m: "MATEMÁTICA", t: 8 }, { id: "info3", m: "NOÇÕES DE INFORMÁTICA", t: 2 }] }, { dia: "Sábado", topicos: [{ id: "rev5", m: "Revisão", t: "Revisar tópicos + Questões" }] } ] },
-            { semana: 6, dias: [ { dia: "Segunda", topicos: [{ id: "leg11", m: "LEGISLAÇÃO", t: 10 }, { id: "qui9", m: "QUÍMICA", t: 9 }] }, { dia: "Terça", topicos: [{ id: "mat10", m: "MATEMÁTICA", t: 9 }, { id: "lp6", m: "LÍNGUA PORTUGUESA", t: 5 }] }, { dia: "Quarta", topicos: [{ id: "fis9", m: "FÍSICA", t: 9 }, { id: "leg12", m: "LEGISLAÇÃO", t: 11 }] }, { dia: "Quinta", topicos: [{ id: "qui10", m: "QUÍMICA", t: 10 }, { id: "adm4", m: "NOÇÕES DE ADMINISTRAÇÃO PÚBLICA", t: 3 }] }, { dia: "Sexta", topicos: [{ id: "amb3", m: "NOÇÕES DE AGENDA AMBIENTAL", t: 2 }, { id: "amb4", m: "NOÇÕES DE AGENDA AMBIENTAL", t: 3 }] }, { dia: "Sábado", topicos: [{ id: "rev6", m: "Revisão", t: "Revisar tópicos + Questões" }] }, { dia: "Domingo", topicos: [{ id: "sim3", m: "Simulado", t: "Simulado Completo 1" }] } ] },
-            { semana: 7, dias: [ { dia: "Segunda", topicos: [{ id: "qui11", m: "QUÍMICA", t: 11 }, { id: "info4", m: "NOÇÕES DE INFORMÁTICA", t: 3 }] }, { dia: "Terça", topicos: [{ id: "adm5", m: "NOÇÕES DE ADMINISTRAÇÃO PÚBLICA", t: 4 }, { id: "adm6", m: "NOÇÕES DE ADMINISTRAÇÃO PÚBLICA", t: 5 }] }, { dia: "Quarta", topicos: [{ id: "qui12", m: "QUÍMICA", t: 12 }, { id: "lp7", m: "LÍNGUA PORTUGUESA", t: 6 }] }, { dia: "Quinta", topicos: [{ id: "adm7", m: "NOÇÕES DE ADMINISTRAÇÃO PÚBLICA", t: 6 }, { id: "adm8", m: "NOÇÕES DE ADMINISTRAÇÃO PÚBLICA", t: 7 }] }, { dia: "Sexta", topicos: [{ id: "qui13", m: "QUÍMICA", t: 13 }, { id: "info5", m: "NOÇÕES DE INFORMÁTICA", t: 4 }] }, { dia: "Sábado", topicos: [{ id: "rev7", m: "Revisão", t: "Concluir matérias + Questões" }] } ] },
-            { semana: 8, dias: [ { dia: "Segunda", topicos: [{ id: "q_leg1", m: "Questões", t: "50 Questões de Legislação" }] }, { dia: "Terça", topicos: [{ id: "q_mat1", m: "Questões", t: "30 Questões de Matemática (Cálculo, Álgebra)" }] }, { dia: "Quarta", topicos: [{ id: "q_fis1", m: "Questões", t: "40 Questões de Física (Mecânica, Termo)" }] }, { dia: "Quinta", topicos: [{ id: "q_qui1", m: "Questões", t: "40 Questões de Química (Geral, Inorgânica)" }] }, { dia: "Sexta", topicos: [{ id: "q_lp_info", m: "Questões", t: "30 de Português + 30 de Informática" }] }, { dia: "Sábado", topicos: [{ id: "rev8", m: "Revisão", t: "Corrigir e revisar questões da semana" }] }, { dia: "Domingo", topicos: [{ id: "sim4", m: "Simulado", t: "Simulado Completo 2" }] } ] },
-            { semana: 9, dias: [ { dia: "Segunda", topicos: [{ id: "q_leg2", m: "Questões", t: "Foco nos erros: Legislação" }] }, { dia: "Terça", topicos: [{ id: "q_mat2", m: "Questões", t: "Foco nos erros: Matemática" }] }, { dia: "Quarta", topicos: [{ id: "q_fis2", m: "Questões", t: "Foco nos erros: Física" }] }, { dia: "Quinta", topicos: [{ id: "q_qui2", m: "Questões", t: "Foco nos erros: Química" }] }, { dia: "Sexta", topicos: [{ id: "q_outras1", m: "Questões", t: "Foco nos erros: Adm. Púb., Ambiental, Inglês" }] }, { dia: "Sábado", topicos: [{ id: "rev9", m: "Revisão", t: "Revisão geral com base nos erros da semana" }] } ] },
-            { semana: 10, dias: [ { dia: "Segunda", topicos: [{ id: "sim4_rev", m: "Revisão", t: "Análise detalhada do Simulado 2" }] }, { dia: "Terça", topicos: [{ id: "rev_geral_leg", m: "Revisão", t: "Revisão geral: Legislação" }] }, { dia: "Quarta", topicos: [{ id: "rev_geral_mat", m: "Revisão", t: "Revisão geral: Matemática" }] }, { dia: "Quinta", topicos: [{ id: "rev_geral_fis", m: "Revisão", t: "Revisão geral: Física" }] }, { dia: "Sexta", topicos: [{ id: "rev_geral_qui", m: "Revisão", t: "Revisão geral: Química" }] }, { dia: "Sábado", topicos: [{ id: "rev10", m: "Revisão", t: "Revisão dos pontos mais fracos identificados" }] }, { dia: "Domingo", topicos: [{ id: "sim5", m: "Simulado", t: "Simulado Completo 3" }] } ] },
-            { semana: 11, dias: [ { dia: "Segunda", topicos: [{ id: "q_prova1", m: "Questões", t: "Resolver prova antiga do CFO CBMDF" }] }, { dia: "Terça", topicos: [{ id: "q_prova2", m: "Questões", t: "Resolver prova antiga de concurso similar (Exatas)" }] }, { dia: "Quarta", topicos: [{ id: "q_prova3", m: "Questões", t: "Resolver prova antiga de concurso similar (Humanas)" }] }, { dia: "Quinta", topicos: [{ id: "rev_flashcards", m: "Revisão", t: "Revisão por flashcards/mapas mentais" }] }, { dia: "Sexta", topicos: [{ id: "rev_lei_seca", m: "Revisão", t: "Leitura de Lei Seca (Legislação)" }] }, { dia: "Sábado", topicos: [{ id: "rev11", m: "Revisão", t: "Revisão dos tópicos com >50% de erro nas provas" }] } ] },
-            { semana: 12, dias: [ { dia: "Segunda", topicos: [{ id: "sim5_rev", m: "Revisão", t: "Análise detalhada do Simulado 3" }] }, { dia: "Terça", topicos: [{ id: "rev12_1", m: "Revisão", t: "Revisão de fórmulas e regras (Exatas e PT)" }] }, { dia: "Quarta", topicos: [{ id: "rev12_2", m: "Revisão", t: "Revisão de conceitos (Física Moderna, Química Orgânica)" }] }, { dia: "Quinta", topicos: [{ id: "rev12_3", m: "Revisão", t: "Revisão das leis mais importantes (Legislação)" }] }, { dia: "Sexta", topicos: [{ id: "rev12_4", m: "Revisão", t: "Revisão de matérias menores (Adm, Amb, Inglês)" }] }, { dia: "Sábado", topicos: [{ id: "rev12", m: "Revisão", t: "Revisão livre dos pontos que sentir necessidade" }] }, { dia: "Domingo", topicos: [{ id: "sim6", m: "Simulado", t: "Simulado Final 1" }] } ] },
-            { semana: 13, dias: [ { dia: "Segunda", topicos: [{ id: "sim6_rev", m: "Revisão", t: "Análise detalhada do Simulado Final 1" }] }, { dia: "Terça", topicos: [{ id: "rev13_1", m: "Revisão", t: "Releitura de resumos e mapas mentais (Gerais)" }] }, { dia: "Quarta", topicos: [{ id: "rev13_2", m: "Revisão", t: "Releitura de resumos e mapas mentais (Específicas)" }] }, { dia: "Quinta", topicos: [{ id: "rev13_3", m: "Revisão", t: "Revisão de fórmulas e conceitos-chave" }] }, { dia: "Sexta", topicos: [{ id: "rev13_4", m: "Revisão", t: "Revisão geral dos pontos com maior dificuldade" }] }, { dia: "Sábado", topicos: [{ id: "rev13", m: "Revisão", t: "Revisão livre dos pontos que sentir necessidade" }] }, { dia: "Domingo", topicos: [{ id: "sim7", m: "Simulado", t: "Simulado Final 2" }] } ] },
-            { semana: 14, dias: [ { dia: "Segunda", topicos: [{ id: "sim7_rev", m: "Revisão", t: "Análise detalhada do Simulado Final 2" }] }, { dia: "Terça", topicos: [{ id: "rev14_1", m: "Revisão Final", t: "Revisão geral de Legislação." }] }, { dia: "Quarta", topicos: [{ id: "rev14_2", m: "Revisão Final", t: "Revisão geral de Matemática e Física." }] }, { dia: "Quinta", topicos: [{ id: "rev14_3", m: "Revisão Final", t: "Revisão geral de Química e Português." }] }, { dia: "Sexta", topicos: [{ id: "rev14_4", m: "Revisão Final", t: "Revisão geral das demais matérias." }] }, { dia: "Sábado", topicos: [{ id: "rev14_5", m: "Revisão Final", t: "Revisão das anotações finais e descanso." }] }, { dia: "Domingo", topicos: [{ id: "descanso1", m: "Descanso", t: "Descanso pré-semana da prova." }] } ] },
-            { semana: 15, dias: [ { dia: "Segunda", topicos: [{ id: "rev15_1", m: "Revisão de Véspera", t: "Leitura de pontos-chave e artigos importantes (Legislação)" }] }, { dia: "Terça", topicos: [{ id: "rev15_2", m: "Revisão de Véspera", t: "Revisão de fórmulas e conceitos principais (Exatas)" }] }, { dia: "Quarta", topicos: [{ id: "rev15_3", m: "Revisão de Véspera", t: "Leitura de mapas mentais e resumos (Gerais)" }] }, { dia: "Quinta", topicos: [{ id: "rev15_4", m: "Revisão de Véspera", t: "Revisão leve dos tópicos mais difíceis" }] }, { dia: "Sexta", topicos: [{ id: "rev15_5", m: "Revisão de Véspera", t: "Separar material e documentos para a prova" }] }, { dia: "Sábado", topicos: [{ id: "descanso_final", m: "Descanso Total", t: "Descanse a mente e o corpo. Confie na sua preparação." }] }, { dia: "Domingo", topicos: [{ id: "prova", m: "Dia da Prova", t: "Boa sorte! Dia de colocar todo o esforço em prática." }] } ] }
-        ];
+            // --- CRONOGRAMA DE ESTUDOS CFO (15 SEMANAS) ---
+            const cronogramaCFO = [
+                // ... (O seu cronograma completo permanece aqui, sem alterações)
+                { semana: 1, dias: [{ dia: "Segunda", topicos: [{ id: "leg1", m: "LEGISLAÇÃO", t: 0 }, { id: "mat1", m: "MATEMÁTICA", t: 0 }] }, { dia: "Terça", topicos: [{ id: "fis1", m: "FÍSICA", t: 1 }, { id: "lp1", m: "LÍNGUA PORTUGUESA", t: 0 }] }, { dia: "Quarta", topicos: [{ id: "qui1", m: "QUÍMICA", t: 1 }, { id: "leg2", m: "LEGISLAÇÃO", t: 1 }] }, { dia: "Quinta", topicos: [{ id: "mat2", m: "MATEMÁTICA", t: 1 }, { id: "ing1", m: "LÍNGUA INGLESA", t: 0 }] }, { dia: "Sexta", topicos: [{ id: "fis2", m: "FÍSICA", t: 2 }, { id: "info1", m: "NOÇÕES DE INFORMÁTICA", t: 0 }] }, { dia: "Sábado", topicos: [{ id: "rev1", m: "Revisão", t: "Revisar tópicos da Semana 1 + Questões" }] }] },
+                { semana: 2, dias: [{ dia: "Segunda", topicos: [{ id: "leg3", m: "LEGISLAÇÃO", t: 2 }, { id: "qui2", m: "QUÍMICA", t: 2 }] }, { dia: "Terça", topicos: [{ id: "mat3", m: "MATEMÁTICA", t: 2 }, { id: "lp2", m: "LÍNGUA PORTUGUESA", t: 1 }] }, { dia: "Quarta", topicos: [{ id: "fis3", m: "FÍSICA", t: 3 }, { id: "leg4", m: "LEGISLAÇÃO", t: 3 }] }, { dia: "Quinta", topicos: [{ id: "qui3", m: "QUÍMICA", t: 3 }, { id: "adm1", m: "NOÇÕES DE ADMINISTRAÇÃO PÚBLICA", t: 0 }] }, { dia: "Sexta", topicos: [{ id: "mat4", m: "MATEMÁTICA", t: 3 }, { id: "amb1", m: "NOÇÕES DE AGENDA AMBIENTAL", t: 0 }] }, { dia: "Sábado", topicos: [{ id: "rev2", m: "Revisão", t: "Revisar tópicos + Questões" }] }, { dia: "Domingo", topicos: [{ id: "sim1", m: "Simulado", t: "Simulado Parcial (Gerais)" }] }] },
+                { semana: 3, dias: [{ dia: "Segunda", topicos: [{ id: "leg5", m: "LEGISLAÇÃO", t: 4 }, { id: "fis4", m: "FÍSICA", t: 4 }] }, { dia: "Terça", topicos: [{ id: "qui4", m: "QUÍMICA", t: 4 }, { id: "lp3", m: "LÍNGUA PORTUGUESA", t: 2 }] }, { dia: "Quarta", topicos: [{ id: "mat5", m: "MATEMÁTICA", t: 4 }, { id: "leg6", m: "LEGISLAÇÃO", t: 5 }] }, { dia: "Quinta", topicos: [{ id: "fis5", m: "FÍSICA", t: 5 }, { id: "info2", m: "NOÇÕES DE INFORMÁTICA", t: 1 }] }, { dia: "Sexta", topicos: [{ id: "qui5", m: "QUÍMICA", t: 5 }, { id: "adm2", m: "NOÇÕES DE ADMINISTRAÇÃO PÚBLICA", t: 1 }] }, { dia: "Sábado", topicos: [{ id: "rev3", m: "Revisão", t: "Revisar tópicos da Semana 3 + Questões" }] }] },
+                { semana: 4, dias: [{ dia: "Segunda", topicos: [{ id: "leg7", m: "LEGISLAÇÃO", t: 6 }, { id: "mat6", m: "MATEMÁTICA", t: 5 }] }, { dia: "Terça", topicos: [{ id: "qui6", m: "QUÍMICA", t: 6 }, { id: "lp4", m: "LÍNGUA PORTUGUESA", t: 3 }] }, { dia: "Quarta", topicos: [{ id: "fis6", m: "FÍSICA", t: 6 }, { id: "leg8", m: "LEGISLAÇÃO", t: 7 }] }, { dia: "Quinta", topicos: [{ id: "mat7", m: "MATEMÁTICA", t: 6 }, { id: "ing2", m: "LÍNGUA INGLESA", t: 1 }] }, { dia: "Sexta", topicos: [{ id: "qui7", m: "QUÍMICA", t: 7 }, { id: "amb2", m: "NOÇÕES DE AGENDA AMBIENTAL", t: 1 }] }, { dia: "Sábado", topicos: [{ id: "rev4", m: "Revisão", t: "Revisar tópicos + Questões" }] }, { dia: "Domingo", topicos: [{ id: "sim2", m: "Simulado", t: "Simulado Parcial (Específicas)" }] }] },
+                { semana: 5, dias: [{ dia: "Segunda", topicos: [{ id: "leg9", m: "LEGISLAÇÃO", t: 8 }, { id: "fis7", m: "FÍSICA", t: 7 }] }, { dia: "Terça", topicos: [{ id: "mat8", m: "MATEMÁTICA", t: 7 }, { id: "lp5", m: "LÍNGUA PORTUGUESA", t: 4 }] }, { dia: "Quarta", topicos: [{ id: "qui8", m: "QUÍMICA", t: 8 }, { id: "leg10", m: "LEGISLAÇÃO", t: 9 }] }, { dia: "Quinta", topicos: [{ id: "fis8", m: "FÍSICA", t: 8 }, { id: "adm3", m: "NOÇÕES DE ADMINISTração PÚBLICA", t: 2 }] }, { dia: "Sexta", topicos: [{ id: "mat9", m: "MATEMÁTICA", t: 8 }, { id: "info3", m: "NOÇÕES DE INFORMÁTICA", t: 2 }] }, { dia: "Sábado", topicos: [{ id: "rev5", m: "Revisão", t: "Revisar tópicos + Questões" }] }] },
+                { semana: 6, dias: [{ dia: "Segunda", topicos: [{ id: "leg11", m: "LEGISLAÇÃO", t: 10 }, { id: "qui9", m: "QUÍMICA", t: 9 }] }, { dia: "Terça", topicos: [{ id: "mat10", m: "MATEMÁTICA", t: 9 }, { id: "lp6", m: "LÍNGUA PORTUGUESA", t: 5 }] }, { dia: "Quarta", topicos: [{ id: "fis9", m: "FÍSICA", t: 9 }, { id: "leg12", m: "LEGISLAÇÃO", t: 11 }] }, { dia: "Quinta", topicos: [{ id: "qui10", m: "QUÍMICA", t: 10 }, { id: "adm4", m: "NOÇÕES DE ADMINISTRAÇÃO PÚBLICA", t: 3 }] }, { dia: "Sexta", topicos: [{ id: "amb3", m: "NOÇÕES DE AGENDA AMBIENTAL", t: 2 }, { id: "amb4", m: "NOÇÕES DE AGENDA AMBIENTAL", t: 3 }] }, { dia: "Sábado", topicos: [{ id: "rev6", m: "Revisão", t: "Revisar tópicos + Questões" }] }, { dia: "Domingo", topicos: [{ id: "sim3", m: "Simulado", t: "Simulado Completo 1" }] }] },
+                { semana: 7, dias: [{ dia: "Segunda", topicos: [{ id: "qui11", m: "QUÍMICA", t: 11 }, { id: "info4", m: "NOÇÕES DE INFORMÁTICA", t: 3 }] }, { dia: "Terça", topicos: [{ id: "adm5", m: "NOÇÕES DE ADMINISTRAÇÃO PÚBLICA", t: 4 }, { id: "adm6", m: "NOÇÕES DE ADMINISTRAÇÃO PÚBLICA", t: 5 }] }, { dia: "Quarta", topicos: [{ id: "qui12", m: "QUÍMICA", t: 12 }, { id: "lp7", m: "LÍNGUA PORTUGUESA", t: 6 }] }, { dia: "Quinta", topicos: [{ id: "adm7", m: "NOÇÕES DE ADMINISTRAÇÃO PÚBLICA", t: 6 }, { id: "adm8", m: "NOÇÕES DE ADMINISTRAÇÃO PÚBLICA", t: 7 }] }, { dia: "Sexta", topicos: [{ id: "qui13", m: "QUÍMICA", t: 13 }, { id: "info5", m: "NOÇÕES DE INFORMÁTICA", t: 4 }] }, { dia: "Sábado", topicos: [{ id: "rev7", m: "Revisão", t: "Concluir matérias + Questões" }] }] },
+                { semana: 8, dias: [{ dia: "Segunda", topicos: [{ id: "q_leg1", m: "Questões", t: "50 Questões de Legislação" }] }, { dia: "Terça", topicos: [{ id: "q_mat1", m: "Questões", t: "30 Questões de Matemática (Cálculo, Álgebra)" }] }, { dia: "Quarta", topicos: [{ id: "q_fis1", m: "Questões", t: "40 Questões de Física (Mecânica, Termo)" }] }, { dia: "Quinta", topicos: [{ id: "q_qui1", m: "Questões", t: "40 Questões de Química (Geral, Inorgânica)" }] }, { dia: "Sexta", topicos: [{ id: "q_lp_info", m: "Questões", t: "30 de Português + 30 de Informática" }] }, { dia: "Sábado", topicos: [{ id: "rev8", m: "Revisão", t: "Corrigir e revisar questões da semana" }] }, { dia: "Domingo", topicos: [{ id: "sim4", m: "Simulado", t: "Simulado Completo 2" }] }] },
+                { semana: 9, dias: [{ dia: "Segunda", topicos: [{ id: "q_leg2", m: "Questões", t: "Foco nos erros: Legislação" }] }, { dia: "Terça", topicos: [{ id: "q_mat2", m: "Questões", t: "Foco nos erros: Matemática" }] }, { dia: "Quarta", topicos: [{ id: "q_fis2", m: "Questões", t: "Foco nos erros: Física" }] }, { dia: "Quinta", topicos: [{ id: "q_qui2", m: "Questões", t: "Foco nos erros: Química" }] }, { dia: "Sexta", topicos: [{ id: "q_outras1", m: "Questões", t: "Foco nos erros: Adm. Púb., Ambiental, Inglês" }] }, { dia: "Sábado", topicos: [{ id: "rev9", m: "Revisão", t: "Revisão geral com base nos erros da semana" }] }] },
+                { semana: 10, dias: [{ dia: "Segunda", topicos: [{ id: "sim4_rev", m: "Revisão", t: "Análise detalhada do Simulado 2" }] }, { dia: "Terça", topicos: [{ id: "rev_geral_leg", m: "Revisão", t: "Revisão geral: Legislação" }] }, { dia: "Quarta", topicos: [{ id: "rev_geral_mat", m: "Revisão", t: "Revisão geral: Matemática" }] }, { dia: "Quinta", topicos: [{ id: "rev_geral_fis", m: "Revisão", t: "Revisão geral: Física" }] }, { dia: "Sexta", topicos: [{ id: "rev_geral_qui", m: "Revisão", t: "Revisão geral: Química" }] }, { dia: "Sábado", topicos: [{ id: "rev10", m: "Revisão", t: "Revisão dos pontos mais fracos identificados" }] }, { dia: "Domingo", topicos: [{ id: "sim5", m: "Simulado", t: "Simulado Completo 3" }] }] },
+                { semana: 11, dias: [{ dia: "Segunda", topicos: [{ id: "q_prova1", m: "Questões", t: "Resolver prova antiga do CFO CBMDF" }] }, { dia: "Terça", topicos: [{ id: "q_prova2", m: "Questões", t: "Resolver prova antiga de concurso similar (Exatas)" }] }, { dia: "Quarta", topicos: [{ id: "q_prova3", m: "Questões", t: "Resolver prova antiga de concurso similar (Humanas)" }] }, { dia: "Quinta", topicos: [{ id: "rev_flashcards", m: "Revisão", t: "Revisão por flashcards/mapas mentais" }] }, { dia: "Sexta", topicos: [{ id: "rev_lei_seca", m: "Revisão", t: "Leitura de Lei Seca (Legislação)" }] }, { dia: "Sábado", topicos: [{ id: "rev11", m: "Revisão", t: "Revisão dos tópicos com >50% de erro nas provas" }] }] },
+                { semana: 12, dias: [{ dia: "Segunda", topicos: [{ id: "sim5_rev", m: "Revisão", t: "Análise detalhada do Simulado 3" }] }, { dia: "Terça", topicos: [{ id: "rev12_1", m: "Revisão", t: "Revisão de fórmulas e regras (Exatas e PT)" }] }, { dia: "Quarta", topicos: [{ id: "rev12_2", m: "Revisão", t: "Revisão de conceitos (Física Moderna, Química Orgânica)" }] }, { dia: "Quinta", topicos: [{ id: "rev12_3", m: "Revisão", t: "Revisão das leis mais importantes (Legislação)" }] }, { dia: "Sexta", topicos: [{ id: "rev12_4", m: "Revisão", t: "Revisão de matérias menores (Adm, Amb, Inglês)" }] }, { dia: "Sábado", topicos: [{ id: "rev12", m: "Revisão", t: "Revisão livre dos pontos que sentir necessidade" }] }, { dia: "Domingo", topicos: [{ id: "sim6", m: "Simulado", t: "Simulado Final 1" }] }] },
+                { semana: 13, dias: [{ dia: "Segunda", topicos: [{ id: "sim6_rev", m: "Revisão", t: "Análise detalhada do Simulado Final 1" }] }, { dia: "Terça", topicos: [{ id: "rev13_1", m: "Revisão", t: "Releitura de resumos e mapas mentais (Gerais)" }] }, { dia: "Quarta", topicos: [{ id: "rev13_2", m: "Revisão", t: "Releitura de resumos e mapas mentais (Específicas)" }] }, { dia: "Quinta", topicos: [{ id: "rev13_3", m: "Revisão", t: "Revisão de fórmulas e conceitos-chave" }] }, { dia: "Sexta", topicos: [{ id: "rev13_4", m: "Revisão", t: "Revisão geral dos pontos com maior dificuldade" }] }, { dia: "Sábado", topicos: [{ id: "rev13", m: "Revisão", t: "Revisão livre dos pontos que sentir necessidade" }] }, { dia: "Domingo", topicos: [{ id: "sim7", m: "Simulado", t: "Simulado Final 2" }] }] },
+                { semana: 14, dias: [{ dia: "Segunda", topicos: [{ id: "sim7_rev", m: "Revisão", t: "Análise detalhada do Simulado Final 2" }] }, { dia: "Terça", topicos: [{ id: "rev14_1", m: "Revisão Final", t: "Revisão geral de Legislação." }] }, { dia: "Quarta", topicos: [{ id: "rev14_2", m: "Revisão Final", t: "Revisão geral de Matemática e Física." }] }, { dia: "Quinta", topicos: [{ id: "rev14_3", m: "Revisão Final", t: "Revisão geral de Química e Português." }] }, { dia: "Sexta", topicos: [{ id: "rev14_4", m: "Revisão Final", t: "Revisão geral das demais matérias." }] }, { dia: "Sábado", topicos: [{ id: "rev14_5", m: "Revisão Final", t: "Revisão das anotações finais e descanso." }] }, { dia: "Domingo", topicos: [{ id: "descanso1", m: "Descanso", t: "Descanso pré-semana da prova." }] }] },
+                { semana: 15, dias: [{ dia: "Segunda", topicos: [{ id: "rev15_1", m: "Revisão de Véspera", t: "Leitura de pontos-chave e artigos importantes (Legislação)" }] }, { dia: "Terça", topicos: [{ id: "rev15_2", m: "Revisão de Véspera", t: "Revisão de fórmulas e conceitos principais (Exatas)" }] }, { dia: "Quarta", topicos: [{ id: "rev15_3", m: "Revisão de Véspera", t: "Leitura de mapas mentais e resumos (Gerais)" }] }, { dia: "Quinta", topicos: [{ id: "rev15_4", m: "Revisão de Véspera", t: "Revisão leve dos tópicos mais difíceis" }] }, { dia: "Sexta", topicos: [{ id: "rev15_5", m: "Revisão de Véspera", t: "Separar material e documentos para a prova" }] }, { dia: "Sábado", topicos: [{ id: "descanso_final", m: "Descanso Total", t: "Descanse a mente e o corpo. Confie na sua preparação." }] }, { dia: "Domingo", topicos: [{ id: "prova", m: "Dia da Prova", t: "Boa sorte! Dia de colocar todo o esforço em prática." }] }] }
+            ];
 
-        const cronogramaContainer = document.getElementById('cronograma-container');
-        const progressPanel = document.getElementById('progress-panel');
-        const todayList = document.getElementById('today-list');
-        const currentDateEl = document.getElementById('current-date');
-        
-        const currentUserEmail = "default_cfo_user@cbmdf.com";
-        const progressKey = `studyProgressCFO_${currentUserEmail}`;
+            const cronogramaContainer = document.getElementById('cronograma-container');
+            const progressPanel = document.getElementById('progress-panel');
+            const todayList = document.getElementById('today-list');
+            const currentDateEl = document.getElementById('current-date');
 
-        let progress = JSON.parse(localStorage.getItem(progressKey)) || {};
-        let totalTopics = 0;
+            const currentUserEmail = "default_cfo_user@cbmdf.com";
+            const progressKey = `studyProgressCFO_${currentUserEmail}`;
 
-        function saveProgress() {
-            localStorage.setItem(progressKey, JSON.stringify(progress));
-        }
+            let progress = JSON.parse(localStorage.getItem(progressKey)) || {};
+            let totalTopics = 0;
 
-        function renderCronograma(currentWeekIndex) {
-            cronogramaContainer.innerHTML = '';
-            totalTopics = 0;
+            function saveProgress() {
+                localStorage.setItem(progressKey, JSON.stringify(progress));
+            }
 
-            cronogramaCFO.forEach((semanaData, index) => {
-                if (!semanaData.dias || semanaData.dias.length === 0) return;
+            function renderCronograma(currentWeekIndex) {
+                cronogramaContainer.innerHTML = '';
+                totalTopics = 0;
 
-                const semanaEl = document.createElement('div');
-                semanaEl.className = 'accordion-item';
-                semanaEl.dataset.weekIndex = index; // Adiciona um identificador para a semana
+                cronogramaCFO.forEach((semanaData, index) => {
+                    if (!semanaData.dias || semanaData.dias.length === 0) return;
 
-                if (index === currentWeekIndex) {
-                    semanaEl.classList.add('current-week');
-                }
+                    const semanaEl = document.createElement('div');
+                    semanaEl.className = 'accordion-item';
+                    semanaEl.dataset.weekIndex = index; // Adiciona um identificador para a semana
 
-                const contentHtml = semanaData.dias.map(diaData => {
-                    const diaTopics = diaData.topicos.map(topic => {
-                        let isCountable = typeof topic.t === 'number' && editalCFO[topic.m] && editalCFO[topic.m][topic.t];
-                        if (isCountable) {
-                            totalTopics++;
-                        }
-                        
-                        const topicText = isCountable ? editalCFO[topic.m][topic.t] : topic.t;
-                        const isCompleted = progress[topic.id] ? 'completed' : '';
-                        const isChecked = progress[topic.id] ? 'checked' : '';
-                        
-                        return `<li class="topic-item ${isCompleted}" data-id="${topic.id}"><input type="checkbox" id="${topic.id}" ${isChecked}><label for="${topic.id}"><span>${topicText}</span><span class="subject-tag">${topic.m}</span></label></li>`;
+                    if (index === currentWeekIndex) {
+                        semanaEl.classList.add('current-week');
+                    }
+
+                    const contentHtml = semanaData.dias.map(diaData => {
+                        const diaTopics = diaData.topicos.map(topic => {
+                            let isCountable = typeof topic.t === 'number' && editalCFO[topic.m] && editalCFO[topic.m][topic.t];
+                            if (isCountable) {
+                                totalTopics++;
+                            }
+
+                            const topicText = isCountable ? editalCFO[topic.m][topic.t] : topic.t;
+                            const isCompleted = progress[topic.id] ? 'completed' : '';
+                            const isChecked = progress[topic.id] ? 'checked' : '';
+
+                            return `<li class="topic-item ${isCompleted}" data-id="${topic.id}"><input type="checkbox" id="${topic.id}" ${isChecked}><label for="${topic.id}"><span>${topicText}</span><span class="subject-tag">${topic.m}</span></label></li>`;
+                        }).join('');
+                        return `<div class="day-plan"><h4>${diaData.dia}</h4><ul>${diaTopics}</ul></div>`;
                     }).join('');
-                    return `<div class="day-plan"><h4>${diaData.dia}</h4><ul>${diaTopics}</ul></div>`;
-                }).join('');
-                
-                semanaEl.innerHTML = `
+
+                    semanaEl.innerHTML = `
                     <div class="accordion-header">
                         <h3>Semana ${semanaData.semana} <span class="progress-label-semana"></span></h3>
                         <i class="fas fa-plus icon"></i>
                     </div>
                     <div class="accordion-content">${contentHtml}</div>`;
 
-                cronogramaContainer.appendChild(semanaEl);
-                updateWeekProgress(semanaEl); // Calcula o progresso inicial da semana
-            });
-        }
-        
-        // FUNÇÃO CORRIGIDA: Agora conta todos os tópicos (incluindo revisões/simulados) para o progresso da semana.
-        function updateWeekProgress(semanaEl) {
-            const weekIndex = parseInt(semanaEl.dataset.weekIndex, 10);
-            const semanaData = cronogramaCFO[weekIndex];
-            if (!semanaData) return;
+                    cronogramaContainer.appendChild(semanaEl);
+                    updateWeekProgress(semanaEl); // Calcula o progresso inicial da semana
+                });
+            }
 
-            let semanaTopics = 0;
-            let semanaCompleted = 0;
+            // FUNÇÃO CORRIGIDA: Agora conta todos os tópicos (incluindo revisões/simulados) para o progresso da semana.
+            function updateWeekProgress(semanaEl) {
+                const weekIndex = parseInt(semanaEl.dataset.weekIndex, 10);
+                const semanaData = cronogramaCFO[weekIndex];
+                if (!semanaData) return;
 
-            semanaData.dias.forEach(dia => {
-                dia.topicos.forEach(topic => {
-                    // A CONDIÇÃO 'if (typeof topic.t === 'number')' FOI REMOVIDA DAQUI
-                    // para que todos os itens da semana (matérias, revisões, simulados) sejam contabilizados.
-                    semanaTopics++;
-                    if (progress[topic.id]) {
-                        semanaCompleted++;
+                let semanaTopics = 0;
+                let semanaCompleted = 0;
+
+                semanaData.dias.forEach(dia => {
+                    dia.topicos.forEach(topic => {
+                        // A CONDIÇÃO 'if (typeof topic.t === 'number')' FOI REMOVIDA DAQUI
+                        // para que todos os itens da semana (matérias, revisões, simulados) sejam contabilizados.
+                        semanaTopics++;
+                        if (progress[topic.id]) {
+                            semanaCompleted++;
+                        }
+                    });
+                });
+
+                // O cálculo agora considera todos os itens da semana.
+                const progressLabel = semanaEl.querySelector('.progress-label-semana');
+                if (semanaTopics > 0) {
+                    const semanaProgress = Math.round((semanaCompleted / semanaTopics) * 100);
+                    progressLabel.textContent = `(${semanaProgress}%)`;
+                } else {
+                    progressLabel.textContent = '';
+                }
+            }
+
+            // ===== INÍCIO DA FUNÇÃO CORRIGIDA =====
+            function updateCharts() {
+                // 1. Identificar todas as matérias e atividades únicas do cronograma
+                const allMateriasFromCronograma = [...new Set(
+                    cronogramaCFO.flatMap(semana =>
+                        semana.dias.flatMap(dia =>
+                            dia.topicos.map(topic => topic.m)
+                        )
+                    )
+                )];
+
+                // Lista de atividades que não devem gerar um card de progresso
+                const materiasToIgnore = ['Descanso', 'Descanso Total', 'Dia da Prova'];
+
+                const completedCountableTopics = Object.keys(progress).filter(id => {
+                    let isCountable = false;
+                    cronogramaCFO.forEach(s => s.dias.forEach(d => d.topicos.forEach(t => {
+                        if (t.id === id && typeof t.t === 'number') {
+                            isCountable = true;
+                        }
+                    })));
+                    return isCountable;
+                }).length;
+
+                const overallPercentage = totalTopics > 0 ? Math.round((completedCountableTopics / totalTopics) * 100) : 0;
+
+                document.getElementById('geral-progress-bar').style.width = `${overallPercentage}%`;
+                document.getElementById('geral-progress-label').textContent = `${overallPercentage}%`;
+
+                const existingCharts = progressPanel.querySelectorAll('.chart-container:not(.overall-chart)');
+                existingCharts.forEach(chart => chart.remove());
+
+                // Laço corrigido para usar a lista completa de matérias do cronograma
+                allMateriasFromCronograma.forEach(materia => {
+                    // Ignora os cards que não fazem sentido ter progresso
+                    if (materiasToIgnore.includes(materia)) {
+                        return;
+                    }
+
+                    let totalMateria = 0, completedMateria = 0;
+                    cronogramaCFO.forEach(s => s.dias && s.dias.forEach(d => d.topicos.forEach(t => {
+                        if (t.m === materia) { // A lógica de contagem agora se aplica a qualquer 'materia' do laço
+                            totalMateria++;
+                            if (progress[t.id]) completedMateria++;
+                        }
+                    })));
+
+                    if (totalMateria > 0) {
+                        const materiaPercentage = Math.round((completedMateria / totalMateria) * 100);
+                        const chartEl = document.createElement('div');
+                        chartEl.className = 'chart-container';
+                        chartEl.innerHTML = `<h4>${materia}</h4><div class="progress-bar-container"><div class="progress-bar" style="width: ${materiaPercentage}%;"></div></div><span class="progress-label">${materiaPercentage}%</span>`;
+                        progressPanel.appendChild(chartEl);
                     }
                 });
-            });
-
-            // O cálculo agora considera todos os itens da semana.
-            const progressLabel = semanaEl.querySelector('.progress-label-semana');
-            if (semanaTopics > 0) {
-                 const semanaProgress = Math.round((semanaCompleted / semanaTopics) * 100);
-                 progressLabel.textContent = `(${semanaProgress}%)`;
-            } else {
-                 progressLabel.textContent = '';
             }
-        }
+            // ===== FIM DA FUNÇÃO CORRIGIDA =====
 
-        // ===== INÍCIO DA FUNÇÃO CORRIGIDA =====
-        function updateCharts() {
-            // 1. Identificar todas as matérias e atividades únicas do cronograma
-            const allMateriasFromCronograma = [...new Set(
-                cronogramaCFO.flatMap(semana => 
-                    semana.dias.flatMap(dia => 
-                        dia.topicos.map(topic => topic.m)
-                    )
-                )
-            )];
-            
-            // Lista de atividades que não devem gerar um card de progresso
-            const materiasToIgnore = ['Descanso', 'Descanso Total', 'Dia da Prova'];
+            function renderTodayStudies(currentWeekIndex) {
+                const today = new Date();
+                const dayOfWeekName = today.toLocaleDateString('pt-BR', { weekday: 'long' });
+                const dayOfWeek = dayOfWeekName.charAt(0).toUpperCase() + dayOfWeekName.slice(1).replace('-feira', '');
 
-            const completedCountableTopics = Object.keys(progress).filter(id => {
-                let isCountable = false;
-                cronogramaCFO.forEach(s => s.dias.forEach(d => d.topicos.forEach(t => {
-                    if (t.id === id && typeof t.t === 'number') {
-                        isCountable = true;
+                currentDateEl.textContent = today.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' });
+
+                if (currentWeekIndex >= 0 && currentWeekIndex < cronogramaCFO.length) {
+                    const currentWeek = cronogramaCFO[currentWeekIndex];
+                    if (currentWeek && currentWeek.dias) {
+                        const todayPlan = currentWeek.dias.find(d => d.dia === dayOfWeek);
+                        if (todayPlan) {
+                            todayList.innerHTML = todayPlan.topicos.map(topic => {
+                                const topicText = (typeof topic.t === 'number' && editalCFO[topic.m]) ? editalCFO[topic.m][topic.t] : topic.t;
+                                return `<li><strong>${topic.m}:</strong> <span>${topicText}</span></li>`
+                            }).join('');
+                            return; // Sai da função se encontrou tarefas
+                        }
                     }
-                })));
-                return isCountable;
-            }).length;
+                }
+                // Mensagem padrão se não encontrar tarefas
+                todayList.innerHTML = '<li>Nenhum estudo agendado para hoje. Aproveite para descansar ou revisar.</li>';
+            }
 
-            const overallPercentage = totalTopics > 0 ? Math.round((completedCountableTopics / totalTopics) * 100) : 0;
-
-            document.getElementById('geral-progress-bar').style.width = `${overallPercentage}%`;
-            document.getElementById('geral-progress-label').textContent = `${overallPercentage}%`;
-            
-            const existingCharts = progressPanel.querySelectorAll('.chart-container:not(.overall-chart)');
-            existingCharts.forEach(chart => chart.remove());
-
-            // Laço corrigido para usar a lista completa de matérias do cronograma
-            allMateriasFromCronograma.forEach(materia => {
-                // Ignora os cards que não fazem sentido ter progresso
-                if (materiasToIgnore.includes(materia)) {
+            cronogramaContainer.addEventListener('click', (e) => {
+                const header = e.target.closest('.accordion-header');
+                if (header) {
+                    header.parentElement.classList.toggle('active');
                     return;
                 }
 
-                let totalMateria = 0, completedMateria = 0;
-                cronogramaCFO.forEach(s => s.dias && s.dias.forEach(d => d.topicos.forEach(t => {
-                    if (t.m === materia) { // A lógica de contagem agora se aplica a qualquer 'materia' do laço
-                        totalMateria++;
-                        if (progress[t.id]) completedMateria++;
-                    }
-                })));
+                const checkbox = e.target.closest('input[type="checkbox"]');
+                if (checkbox) {
+                    const id = checkbox.id;
+                    const topicItem = checkbox.closest('.topic-item');
+                    const semanaItem = checkbox.closest('.accordion-item');
 
-                if (totalMateria > 0) {
-                    const materiaPercentage = Math.round((completedMateria / totalMateria) * 100);
-                    const chartEl = document.createElement('div');
-                    chartEl.className = 'chart-container';
-                    chartEl.innerHTML = `<h4>${materia}</h4><div class="progress-bar-container"><div class="progress-bar" style="width: ${materiaPercentage}%;"></div></div><span class="progress-label">${materiaPercentage}%</span>`;
-                    progressPanel.appendChild(chartEl);
+                    if (checkbox.checked) {
+                        progress[id] = true;
+                        topicItem.classList.add('completed');
+                    } else {
+                        delete progress[id];
+                        topicItem.classList.remove('completed');
+                    }
+                    saveProgress();
+
+                    // --- ATUALIZAÇÃO OTIMIZADA ---
+                    updateWeekProgress(semanaItem); // Atualiza só o % da semana
+                    updateCharts(); // Atualiza os gráficos gerais e por matéria
                 }
             });
-        }
-        // ===== FIM DA FUNÇÃO CORRIGIDA =====
-        
-        function renderTodayStudies(currentWeekIndex) {
+
+            // --- INICIALIZAÇÃO ---
+            const startDate = new Date('2025-08-18T00:00:00');
             const today = new Date();
-            const dayOfWeekName = today.toLocaleDateString('pt-BR', { weekday: 'long' });
-            const dayOfWeek = dayOfWeekName.charAt(0).toUpperCase() + dayOfWeekName.slice(1).replace('-feira', '');
-            
-            currentDateEl.textContent = today.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' });
-            
+            const oneDay = 1000 * 60 * 60 * 24;
+            const diffTime = today - startDate;
+            const currentWeekIndex = Math.floor(diffTime / (oneDay * 7));
+
+            renderCronograma(currentWeekIndex);
+            updateCharts();
+            renderTodayStudies(currentWeekIndex);
+
+            // Abre o acordeão da semana atual automaticamente
             if (currentWeekIndex >= 0 && currentWeekIndex < cronogramaCFO.length) {
-                const currentWeek = cronogramaCFO[currentWeekIndex];
-                if (currentWeek && currentWeek.dias) {
-                    const todayPlan = currentWeek.dias.find(d => d.dia === dayOfWeek);
-                    if (todayPlan) {
-                        todayList.innerHTML = todayPlan.topicos.map(topic => {
-                            const topicText = (typeof topic.t === 'number' && editalCFO[topic.m]) ? editalCFO[topic.m][topic.t] : topic.t;
-                            return `<li><strong>${topic.m}:</strong> <span>${topicText}</span></li>`
-                        }).join('');
-                        return; // Sai da função se encontrou tarefas
-                    }
+                const currentWeekEl = cronogramaContainer.querySelector(`[data-week-index="${currentWeekIndex}"]`);
+                if (currentWeekEl) {
+                    currentWeekEl.classList.add('active');
                 }
-            }
-            // Mensagem padrão se não encontrar tarefas
-            todayList.innerHTML = '<li>Nenhum estudo agendado para hoje. Aproveite para descansar ou revisar.</li>';
-        }
-
-        cronogramaContainer.addEventListener('click', (e) => {
-            const header = e.target.closest('.accordion-header');
-            if (header) {
-                header.parentElement.classList.toggle('active');
-                return;
-            }
-
-            const checkbox = e.target.closest('input[type="checkbox"]');
-            if (checkbox) {
-                const id = checkbox.id;
-                const topicItem = checkbox.closest('.topic-item');
-                const semanaItem = checkbox.closest('.accordion-item');
-
-                if (checkbox.checked) {
-                    progress[id] = true;
-                    topicItem.classList.add('completed');
-                } else {
-                    delete progress[id];
-                    topicItem.classList.remove('completed');
-                }
-                saveProgress();
-                
-                // --- ATUALIZAÇÃO OTIMIZADA ---
-                updateWeekProgress(semanaItem); // Atualiza só o % da semana
-                updateCharts(); // Atualiza os gráficos gerais e por matéria
             }
         });
-
-        // --- INICIALIZAÇÃO ---
-        const startDate = new Date('2025-08-18T00:00:00'); 
-        const today = new Date();
-        const oneDay = 1000 * 60 * 60 * 24;
-        const diffTime = today - startDate;
-        const currentWeekIndex = Math.floor(diffTime / (oneDay * 7));
-
-        renderCronograma(currentWeekIndex);
-        updateCharts();
-        renderTodayStudies(currentWeekIndex);
-        
-        // Abre o acordeão da semana atual automaticamente
-        if (currentWeekIndex >= 0 && currentWeekIndex < cronogramaCFO.length) {
-            const currentWeekEl = cronogramaContainer.querySelector(`[data-week-index="${currentWeekIndex}"]`);
-            if (currentWeekEl) {
-                currentWeekEl.classList.add('active');
-            }
-        }
-    });
     </script>
 </body>
+
 </html>
